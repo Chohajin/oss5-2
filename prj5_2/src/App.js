@@ -7,6 +7,7 @@ import CreateUser from "./components/User/CreateUser";
 import EditUser from "./components/User/EditUser";
 import ShowUser from "./components/User/ShowUser";
 import ShowList from "./components/Pages/Carosol";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
