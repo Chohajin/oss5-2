@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate import
+import { useNavigate } from "react-router-dom";
 
 const ShowUser = () => {
   const apiUrl = "https://67281923270bd0b9755456e8.mockapi.io/api/v1/users";
@@ -8,7 +8,7 @@ const ShowUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const navigate = useNavigate(); // useNavigate hook
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
@@ -19,7 +19,13 @@ const ShowUser = () => {
       setIsLoading(true);
       const response = await fetch(apiUrl);
       const data = await response.json();
-      setUsers(data);
+
+      // birthMonth 필드가 없는 경우 기본값 추가
+      const updatedData = data.map((user) => ({
+        ...user,
+        birthMonth: user.birthMonth || "Not Provided",
+      }));
+      setUsers(updatedData);
     } catch (err) {
       setError("Failed to fetch users.");
     } finally {
@@ -28,6 +34,9 @@ const ShowUser = () => {
   };
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("해당 학생 정보를 삭제하시겠습니까?");
+    if (!confirmDelete) return;
+
     try {
       setIsLoading(true);
       const response = await fetch(`${apiUrl}/${id}`, {
@@ -43,12 +52,11 @@ const ShowUser = () => {
   };
 
   const handleEdit = (id) => {
-    navigate(`/edit-user/${id}`); // Redirect to EditUser with user id
+    navigate(`/edit-user/${id}`);
   };
 
   return (
     <div className="container-fluid mt-3">
-      {/* Header Section */}
       <div className="container text-center mb-4">
         <h2 className="mt-3">👥 User Management</h2>
         <a href="/create-user" className="btn btn-primary my-2">
@@ -56,7 +64,6 @@ const ShowUser = () => {
         </a>
       </div>
 
-      {/* Table Section */}
       <div className="container d-flex justify-content-center align-items-center">
         <div className="col-8">
           {isLoading && (
@@ -72,6 +79,7 @@ const ShowUser = () => {
                   <th>Name</th>
                   <th>Age</th>
                   <th>City</th>
+                  <th>Birth Month</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -83,12 +91,13 @@ const ShowUser = () => {
                       <td>{user.name}</td>
                       <td>{user.age}</td>
                       <td>{user.city}</td>
+                      <td>{user.birthMonth}</td>
                       <td>
                         <div className="btn-group">
                           <button
                             className="btn btn-warning btn-sm"
                             title="Edit"
-                            onClick={() => handleEdit(user.id)} // Redirect to EditUser
+                            onClick={() => handleEdit(user.id)}
                           >
                             ✏️
                           </button>
@@ -105,7 +114,7 @@ const ShowUser = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="text-center">
+                    <td colSpan="6" className="text-center">
                       No Users Found
                     </td>
                   </tr>

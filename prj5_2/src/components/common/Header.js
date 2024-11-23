@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./common.css";
+import "../common/common.css"; // 올바른 경로
 
 export default function Header() {
   return (
@@ -9,9 +9,11 @@ export default function Header() {
         <div className="container">
           {/* 왼쪽 학번 및 이름 */}
           <div className="navbar-brand">
-            <span className="navbar-text">Students Info</span>
+            <Link className="navbar-text text-white text-decoration-none" to="/">
+              Students Info
+            </Link>
           </div>
-          
+
           {/* 오른쪽 네비게이션 메뉴 */}
           <div
             className="collapse navbar-collapse justify-content-end"

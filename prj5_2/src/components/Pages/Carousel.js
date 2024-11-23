@@ -1,6 +1,6 @@
 import React from "react";
 
-const Carasol = () => {
+const Carousel = () => {
   return (
     <div className="carasol-container">
       <div id="demo" className="carousel slide" data-bs-ride="carousel">
@@ -22,4 +22,4 @@ const Carasol = () => {
   );
 };
 
-export default Carasol;
+export default Carousel;

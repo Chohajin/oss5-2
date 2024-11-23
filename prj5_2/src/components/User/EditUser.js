@@ -5,7 +5,7 @@ const EditUser = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const apiUrl = `https://67281923270bd0b9755456e8.mockapi.io/api/v1/users/${id}`;
-  const [user, setUser] = useState({ name: "", age: "", city: "" });
+  const [user, setUser] = useState({ name: "", age: "", city: "", birthMonth: "" });
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -29,6 +29,13 @@ const EditUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 유효성 검사
+    if (!user.name || !user.age || !user.city || !user.birthMonth) {
+      alert("모든 필드를 입력해주세요!");
+      return;
+    }
+
     try {
       await fetch(apiUrl, {
         method: "PUT",
@@ -88,6 +95,33 @@ const EditUser = () => {
               onChange={handleChange}
               required
             />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="birthMonth" className="form-label">
+              Birth Month
+            </label>
+            <select
+              className="form-control"
+              id="birthMonth"
+              name="birthMonth"
+              value={user.birthMonth}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Month</option>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
           </div>
           <div className="d-flex justify-content-between">
             <button

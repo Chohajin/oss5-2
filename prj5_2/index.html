@@ -13,7 +13,6 @@
         <h1>학생 데이터 관리</h1>
         <button id="btnStu" class="btn btn-primary mb-2">모든 학생 데이터 가져오기</button>
         <button id="openAddModal" class="btn btn-success mb-2" data-toggle="modal" data-target="#addModal">학생 데이터 추가</button>
-        <button id="openUpdateModal" class="btn btn-warning mb-2" data-toggle="modal" data-target="#updateModal">학생 데이터 수정</button>
         <h2>학생 데이터 삭제</h2>
         <div class="mb-3">
             <label for="deleteId">학생 ID</label>
@@ -34,46 +33,32 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="id">학생 ID</label>
-                    <input type="text" id="id" class="form-control" placeholder="ID 입력" required />
                     <label for="name">이름</label>
                     <input type="text" id="name" class="form-control" placeholder="이름" required />
                     <label for="age">나이</label>
                     <input type="number" id="age" class="form-control" placeholder="나이" required />
                     <label for="city">거주지</label>
                     <input type="text" id="city" class="form-control" placeholder="거주지" required />
+                    <label for="birthMonth">태어난 달</label>
+                    <select id="birthMonth" class="form-control" required>
+                        <option value="">선택</option>
+                        <option value="January">1월</option>
+                        <option value="February">2월</option>
+                        <option value="March">3월</option>
+                        <option value="April">4월</option>
+                        <option value="May">5월</option>
+                        <option value="June">6월</option>
+                        <option value="July">7월</option>
+                        <option value="August">8월</option>
+                        <option value="September">9월</option>
+                        <option value="October">10월</option>
+                        <option value="November">11월</option>
+                        <option value="December">12월</option>
+                    </select>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
                     <button type="button" class="btn btn-primary" id="btnAdd">추가</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 데이터 수정 모달 -->
-    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">학생 데이터 수정</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <label for="updateId">학생 ID</label>
-                    <input type="number" id="updateId" class="form-control" placeholder="ID 입력" required />
-                    <label for="updateName">이름</label>
-                    <input type="text" id="updateName" class="form-control" placeholder="이름" />
-                    <label for="updateAge">나이</label>
-                    <input type="number" id="updateAge" class="form-control" placeholder="나이" />
-                    <label for="updateCity">거주지</label>
-                    <input type="text" id="updateCity" class="form-control" placeholder="거주지" />
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-primary" id="btnUpdate">수정</button>
                 </div>
             </div>
         </div>
@@ -84,138 +69,78 @@
     <script>
         const apiBaseURL = "https://67281923270bd0b9755456e8.mockapi.io/api/v1/users";
 
-        window.onload = function () {
-            const btnStu = document.getElementById("btnStu");
-            const btnAdd = document.getElementById("btnAdd");
-            const btnUpdate = document.getElementById("btnUpdate");
-            const btnDelete = document.getElementById("btnDelete");
-
-            btnStu.addEventListener("click", getStudentsWithCourses);
-            btnAdd.addEventListener("click", () => {
-                postData();
-                $('#addModal').modal('hide');
-                resetModalFields();
-            });
-            btnUpdate.addEventListener("click", () => {
-                const id = document.getElementById("updateId").value;
-                if (id) {
-                    updateData(id);
-                    $('#updateModal').modal('hide');
-                    resetModalFields();
-                } else {
-                    alert("수정할 ID를 입력하세요.");
-                }
-            });
-
-            btnDelete.addEventListener("click", () => {
-                const id = document.getElementById("deleteId").value;
-                if (id && confirm("정말 삭제하시겠습니까?")) {
-                    deleteDataById(id);
-                }
-            });
-        };
-
-        function getStudentsWithCourses() {
+        function fetchStudents() {
             const contents = document.getElementById("contents");
-            contents.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div>';
-
+            contents.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
             fetch(apiBaseURL)
                 .then(response => response.json())
-                .then(students => {
+                .then(data => {
                     contents.innerHTML = `
-                        <table class="table table-striped table-bordered">
-                            <thead class="thead-dark">
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>이름</th>
                                     <th>나이</th>
                                     <th>거주지</th>
+                                    <th>태어난 달</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${students.map(student => `
+                                ${data.map(student => `
                                     <tr>
                                         <td>${student.id}</td>
                                         <td>${student.name}</td>
                                         <td>${student.age}</td>
                                         <td>${student.city}</td>
+                                        <td>${student.birthMonth || "정보 없음"}</td>
                                     </tr>
-                                `).join('')}
+                                `).join("")}
                             </tbody>
-                        </table>
-                    `;
+                        </table>`;
                 })
-                .catch(error => console.error("데이터를 가져오는 중 오류 발생:", error));
+                .catch(error => console.error("데이터 가져오기 오류:", error));
         }
 
-        function postData() {
-            const id = document.getElementById("id").value;
-            const name = document.getElementById("name").value;
-            const age = document.getElementById("age").value;
-            const city = document.getElementById("city").value;
+        function addStudent() {
+            const name = document.getElementById("name").value.trim();
+            const age = document.getElementById("age").value.trim();
+            const city = document.getElementById("city").value.trim();
+            const birthMonth = document.getElementById("birthMonth").value;
 
-            if (!name || !age || !city || isNaN(age)) {
-                alert("유효한 데이터를 입력해주세요.");
+            if (!name || !age || !city || !birthMonth) {
+                alert("모든 필드를 입력해주세요.");
                 return;
             }
 
             fetch(apiBaseURL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, name, age: parseInt(age, 10), city })
-            })
-                .then(response => {
-                    if (response.ok) {
-                        getStudentsWithCourses();
-                    } else {
-                        console.error("추가 중 오류 발생:", response.status, response.statusText);
-                    }
-                })
-                .catch(error => console.error("추가 중 오류 발생:", error));
+                body: JSON.stringify({ name, age: parseInt(age), city, birthMonth })
+            }).then(() => {
+                fetchStudents();
+                $('#addModal').modal('hide');
+            }).catch(error => console.error("학생 추가 오류:", error));
         }
 
-        function updateData(id) {
-            const name = document.getElementById("updateName").value;
-            const age = document.getElementById("updateAge").value;
-            const city = document.getElementById("updateCity").value;
-
-            fetch(`${apiBaseURL}/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, age: parseInt(age, 10), city })
-            })
-                .then(response => {
-                    if (response.ok) {
-                        getStudentsWithCourses();
-                    } else {
-                        console.error("수정 중 오류 발생:", response.status, response.statusText);
-                    }
-                })
-                .catch(error => console.error("수정 중 오류 발생:", error));
+        function deleteStudent() {
+            const id = document.getElementById("deleteId").value.trim();
+            if (!id) {
+                alert("ID를 입력해주세요.");
+                return;
+            }
+            if (confirm("정말 삭제하시겠습니까?")) {
+                fetch(`${apiBaseURL}/${id}`, { method: "DELETE" })
+                    .then(() => fetchStudents())
+                    .catch(error => console.error("학생 삭제 오류:", error));
+            }
         }
 
-        function deleteDataById(id) {
-            fetch(`${apiBaseURL}/${id}`, { method: "DELETE" })
-                .then(response => {
-                    if (response.ok) {
-                        getStudentsWithCourses();
-                    } else {
-                        console.error("삭제 중 오류 발생:", response.status, response.statusText);
-                    }
-                })
-                .catch(error => console.error("삭제 중 오류 발생:", error));
-        }
-
-        function resetModalFields() {
-            document.getElementById("id").value = "";
-            document.getElementById("name").value = "";
-            document.getElementById("age").value = "";
-            document.getElementById("city").value = "";
-            document.getElementById("updateId").value = "";
-            document.getElementById("updateName").value = "";
-            document.getElementById("updateAge").value = "";
-            document.getElementById("updateCity").value = "";
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("btnStu").addEventListener("click", fetchStudents);
+            document.getElementById("btnAdd").addEventListener("click", addStudent);
+            document.getElementById("btnDelete").addEventListener("click", deleteStudent);
+        });
     </script>
 </body>
 
